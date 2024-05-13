@@ -2,7 +2,6 @@
 #include <gl/GL.h>
 #include <gl/GLU.h>
 #include <math.h>
-#include <cmath>
 
 
 #pragma comment(lib,"opengl32.lib")
@@ -16,7 +15,6 @@ GLfloat doorAngle = 0.0f; // Angle of the door
 GLfloat windowAngle = 0.0f; // Angle of the windows
 bool isDoorOpening = false, isDoorClosing = false, isDoorOpen = false;
 bool isWindowOpening = false, isWindowClosing = false, isWindowOpen = false;
-bool move = false;
 
 
 
@@ -24,44 +22,25 @@ bool move = false;
 void drawWindows(GLfloat x, GLfloat y, GLfloat z) {
 	glBegin(GL_QUADS);
 	glColor3f(0.0f, 0.5f, 0.5f); // Dark cyan color
-	glVertex3f(x, y, z);
-	glVertex3f(x + 0.5, y, z);
-	glVertex3f(x + 0.5, y + 1, z);
-	glVertex3f(x, y + 1, z);
+	glVertex3f(x, y, z); glVertex3f(x + 0.5, y, z); glVertex3f(x + 0.5, y + 1, z); glVertex3f(x, y + 1, z);
 
 	// add depth to the windows to inside the building
 	// color gray
 	glColor3f(0.6, 0.6, 0.6);
-	glVertex3f(x, y, z - 0.1);
-	glVertex3f(x + 0.5, y, z - 0.1);
-	glVertex3f(x + 0.5, y + 1, z - 0.1);
-	glVertex3f(x, y + 1, z - 0.1);
+	glVertex3f(x, y, z - 0.1); glVertex3f(x + 0.5, y, z - 0.1); glVertex3f(x + 0.5, y + 1, z - 0.1); glVertex3f(x, y + 1, z - 0.1);
 
 	// fill the space between the 2 quads to make the window look solid
-	glVertex3f(x + 0.5, y, z);
-	glVertex3f(x + 0.5, y, z - 0.1);
-	glVertex3f(x + 0.5, y + 1, z - 0.1);
-	glVertex3f(x + 0.5, y + 1, z);
+	glVertex3f(x + 0.5, y, z); glVertex3f(x + 0.5, y, z - 0.1); glVertex3f(x + 0.5, y + 1, z - 0.1); glVertex3f(x + 0.5, y + 1, z);
 
-	glVertex3f(x, y + 1, z);
-	glVertex3f(x + 0.5, y + 1, z);
-	glVertex3f(x + 0.5, y + 1, z - 0.1);
-	glVertex3f(x, y + 1, z - 0.1);
+	glVertex3f(x, y + 1, z); glVertex3f(x + 0.5, y + 1, z); glVertex3f(x + 0.5, y + 1, z - 0.1); glVertex3f(x, y + 1, z - 0.1);
 
-	glVertex3f(x, y, z);
-	glVertex3f(x, y, z - 0.1);
-	glVertex3f(x, y + 1, z - 0.1);
-	glVertex3f(x, y + 1, z);
+	glVertex3f(x, y, z); glVertex3f(x, y, z - 0.1); glVertex3f(x, y + 1, z - 0.1); glVertex3f(x, y + 1, z);
 
-	glVertex3f(x, y, z);
-	glVertex3f(x + 0.5, y, z);
-	glVertex3f(x + 0.5, y, z - 0.1);
-	glVertex3f(x, y, z - 0.1);
-
-
+	glVertex3f(x, y, z); glVertex3f(x + 0.5, y, z); glVertex3f(x + 0.5, y, z - 0.1); glVertex3f(x, y, z - 0.1);
 
 	glEnd();
 }
+
 
 
 void drawDoor() {
@@ -71,44 +50,42 @@ void drawDoor() {
 	glTranslated(0.5, 0.0, -3.01); // Translate the door back to its position
 	glBegin(GL_QUADS);
 	glColor3f(0.3, 0.2, 0.1); // Dark brown for the door
-	glVertex3f(-0.5, 0.0, 3.01);
-	glVertex3f(0.5, 0.0, 3.01);
-	glVertex3f(0.5, 1.8, 3.01);
-	glVertex3f(-0.5, 1.8, 3.01);
+	glVertex3f(-0.5, 0.0, 3.01); glVertex3f(0.5, 0.0, 3.01); glVertex3f(0.5, 1.8, 3.01); glVertex3f(-0.5, 1.8, 3.01);
+	
 	// add depth to the door to inside the building
 	// color gray
-	glColor3f(0.6, 0.6, 0.6);
-	glVertex3f(-0.5, 0.0, 2.9);
-	glVertex3f(0.5, 0.0, 2.9);
-	glVertex3f(0.5, 1.8, 2.9);
-	glVertex3f(-0.5, 1.8, 2.9);
+	glColor3f(0.6, 0.6, 0.6); glVertex3f(-0.5, 0.0, 2.9); glVertex3f(0.5, 0.0, 2.9); glVertex3f(0.5, 1.8, 2.9); glVertex3f(-0.5, 1.8, 2.9);
 
 	// fill the space between the 2 quads to make the door look solid
-	glVertex3f(-0.5, 0.0, 3.01);
-	glVertex3f(-0.5, 0.0, 2.9);
-	glVertex3f(-0.5, 1.8, 2.9);
-	glVertex3f(-0.5, 1.8, 3.01);
+	glVertex3f(-0.5, 0.0, 3.01); glVertex3f(-0.5, 0.0, 2.9); glVertex3f(-0.5, 1.8, 2.9); glVertex3f(-0.5, 1.8, 3.01);
 
-	glVertex3f(0.5, 0.0, 3.01);
-	glVertex3f(0.5, 0.0, 2.9);
-	glVertex3f(0.5, 1.8, 2.9);
-	glVertex3f(0.5, 1.8, 3.01);
+	glVertex3f(0.5, 0.0, 3.01); glVertex3f(0.5, 0.0, 2.9); glVertex3f(0.5, 1.8, 2.9); glVertex3f(0.5, 1.8, 3.01);
 	// the upper part of the door
-	glVertex3f(-0.5, 1.8, 3.01);
-	glVertex3f(0.5, 1.8, 3.01);
-	glVertex3f(0.5, 1.8, 2.9);
-	glVertex3f(-0.5, 1.8, 2.9);
+	glVertex3f(-0.5, 1.8, 3.01); glVertex3f(0.5, 1.8, 3.01); glVertex3f(0.5, 1.8, 2.9); glVertex3f(-0.5, 1.8, 2.9);
 
 	// make a handle for the door like a knob
 	glColor3f(1.0f, 1.0f, 0.0f); // Yellow color
-	glVertex3f(0.4, 0.6, 3.02);
-	glVertex3f(0.5, 0.6, 3.02);
-	glVertex3f(0.5, 0.7, 3.02);
-	glVertex3f(0.4, 0.7, 3.02);
+	glVertex3f(0.4, 0.6, 3.02); glVertex3f(0.5, 0.6, 3.02); glVertex3f(0.5, 0.7, 3.02); glVertex3f(0.4, 0.7, 3.02);
+	
 	glEnd();
 	glPopMatrix(); // Restore the previous matrix state
 }
+// this draw a 3 * 3 right and left wall
+void drawRLWall(GLfloat x, GLfloat y, GLfloat z) {
 
+	glBegin(GL_QUADS);
+	glColor3f(0.3f, 0.3f, 0.3f); // Dark grey color for the wall
+	glVertex3f(x, y, z); glVertex3f(x, y, -z); glVertex3f(x, y + 3, -z); glVertex3f(x, y + 3, z);
+	glEnd();
+}
+
+// this draw a 3 * 3 back wall
+void drawBackWall(GLfloat x, GLfloat y, GLfloat z) {
+	glBegin(GL_QUADS);
+	glColor3f(0.3f, 0.3f, 0.3f); // Dark grey color for the wall
+	glVertex3f(x, y, z); glVertex3f(-x, y, z); glVertex3f(-x, y + 3, z); glVertex3f(x, y + 3, z);
+	glEnd();
+}
 
 void drawWalls() {
 	glBegin(GL_QUADS);
@@ -116,193 +93,101 @@ void drawWalls() {
 	// plane for the first floor with color off white
 	
 	glColor3f(0.7f, 0.7f, 0.7f);
-	glVertex3f(-3.0, 0.1, 3.0);
-	glVertex3f(3.0, 0.1, 3.0);
-	glVertex3f(3.0, 0.1, -3.0);
-	glVertex3f(-3.0, 0.1, -3.0);
+	glVertex3f(-3.0, 0.1, 3.0); glVertex3f(3.0, 0.1, 3.0); glVertex3f(3.0, 0.1, -3.0); glVertex3f(-3.0, 0.1, -3.0);
 
 	// dark grey color for the wall
 	glColor3f(0.3f, 0.3f, 0.3f);
 	// this exclueds the windows for the first floor
-	glVertex3f(-3.0, 0.0, 3.0); 
-	glVertex3f(-2, 0.0, 3.0);
-	glVertex3f(-2, 3.0, 3.0);
-	glVertex3f(-3.0, 3.0, 3.0);
+	glVertex3f(-3.0, 0.0, 3.0);  glVertex3f(-2, 0.0, 3.0); glVertex3f(-2, 3.0, 3.0); glVertex3f(-3.0, 3.0, 3.0);
 
-	glVertex3f(2, 0.0, 3.0);
-	glVertex3f(3.0, 0.0, 3.0);
-	glVertex3f(3.0, 3.0, 3.0);
-	glVertex3f(2, 3.0, 3.0);
+	glVertex3f(2, 0.0, 3.0); glVertex3f(3.0, 0.0, 3.0); glVertex3f(3.0, 3.0, 3.0); glVertex3f(2, 3.0, 3.0);
 
-	glVertex3f(-1, 0.0, 3.0);
-	glVertex3f(-0.5, 0.0, 3.0);
-	glVertex3f(-0.5, 3.0, 3.0);
-	glVertex3f(-1, 3.0, 3.0);
+	glVertex3f(-1, 0.0, 3.0); glVertex3f(-0.5, 0.0, 3.0); glVertex3f(-0.5, 3.0, 3.0); glVertex3f(-1, 3.0, 3.0);
 
-	glVertex3f(0.5, 0.0, 3.0);
-	glVertex3f(1, 0.0, 3.0);
-	glVertex3f(1, 3.0, 3.0);
-	glVertex3f(0.5, 3.0, 3.0);
+	glVertex3f(0.5, 0.0, 3.0); glVertex3f(1, 0.0, 3.0); glVertex3f(1, 3.0, 3.0); glVertex3f(0.5, 3.0, 3.0);
 
 	// filling top of the door 
-	glVertex3f(-0.5, 1.8, 3.0);
-	glVertex3f(0.5, 1.8, 3.0);
-	glVertex3f(0.5, 3.0, 3.0);
-	glVertex3f(-0.5, 3.0, 3.0);
+	glVertex3f(-0.5, 1.8, 3.0); glVertex3f(0.5, 1.8, 3.0); glVertex3f(0.5, 3.0, 3.0); glVertex3f(-0.5, 3.0, 3.0);
 
 	// filling top of the windows
-	glVertex3f(-2, 2.2 , 3.0);
-	glVertex3f(-1, 2.2, 3.0);
-	glVertex3f(-1, 3.0, 3.0);
-	glVertex3f(-2, 3.0, 3.0);
+	glVertex3f(-2, 2.2 , 3.0); glVertex3f(2, 2.2, 3.0); glVertex3f(2, 3.0, 3.0); glVertex3f(-2, 3.0, 3.0);
 	
 
-	glVertex3f(1, 2.2, 3.0);
-	glVertex3f(2, 2.2, 3.0);
-	glVertex3f(2, 3.0, 3.0);
-	glVertex3f(1, 3.0, 3.0);
 
 	// filling under the windows
-	glVertex3f(-2, 0.0, 3.0);
-	glVertex3f(-1, 0.0, 3.0);
-	glVertex3f(-1, 1.2, 3.0);
-	glVertex3f(-2, 1.2, 3.0);
+	glVertex3f(-2, 0.0, 3.0); glVertex3f(-1, 0.0, 3.0); glVertex3f(-1, 1.2, 3.0); glVertex3f(-2, 1.2, 3.0);
 
-	glVertex3f(1, 0.0, 3.0);
-	glVertex3f(2, 0.0, 3.0);
-	glVertex3f(2, 1.2, 3.0);
-	glVertex3f(1, 1.2, 3.0);
-
+	glVertex3f(1, 0.0, 3.0); glVertex3f(2, 0.0, 3.0); glVertex3f(2, 1.2, 3.0); glVertex3f(1, 1.2, 3.0);
+	glEnd();
 
 
 	// right
-	glVertex3f(3.0, 0.0, -3.0);
-	glVertex3f(3.0, 0.0, 3.0);
-	glVertex3f(3.0, 3.0, 3.0);
-	glVertex3f(3.0, 3.0, -3.0);
+	drawRLWall(3.0, 0.0, -3.0);
 	// left
-	glVertex3f(-3.0, 0.0, -3.0);
-	glVertex3f(-3.0, 0.0, 3.0);
-	glVertex3f(-3.0, 3.0, 3.0);
-	glVertex3f(-3.0, 3.0, -3.0);
+	drawRLWall(-3.0, 0.0, -3.0);
 	// back
-	glVertex3f(-3.0, 0.0, -3.0);
-	glVertex3f(3.0, 0.0, -3.0);
-	glVertex3f(3.0, 3.0, -3.0);
-	glVertex3f(-3.0, 3.0, -3.0);
+	drawBackWall(-3.0, 0.0, -3.0);
+
 
 	// Second floor
 	// front
 	// draw the second floor with color off white
-	glColor3f(0.7f, 0.7f, 0.7f);
-	glVertex3f(-3.0, 3.1, 3.0);
-	glVertex3f(3.0, 3.1, 3.0);
-	glVertex3f(3.0, 3.1, -3.0);
-	glVertex3f(-3.0, 3.1, -3.0);
+	glBegin(GL_QUADS);
+	glColor3f(0.7f, 0.7f, 0.7f); 
+	glVertex3f(-3.0, 3.1, 3.0); glVertex3f(3.0, 3.1, 3.0); glVertex3f(3.0, 3.1, -3.0); glVertex3f(-3.0, 3.1, -3.0);
 
 	// exclude the windows for the second floor
 	glColor3f(0.3f, 0.3f, 0.3f);
-	glVertex3f(-3.0, 3.1, 3.0);
-	glVertex3f(-2, 3.1, 3.0);
-	glVertex3f(-2, 6.1, 3.0);
-	glVertex3f(-3.0, 6.1, 3.0);
+	glVertex3f(-3.0, 3.1, 3.0); glVertex3f(-2, 3.1, 3.0); glVertex3f(-2, 6.1, 3.0); glVertex3f(-3.0, 6.1, 3.0);
 
-	glVertex3f(2, 3.1, 3.0);
-	glVertex3f(3.0, 3.1, 3.0);
-	glVertex3f(3.0, 6.1, 3.0);
-	glVertex3f(2, 6.1, 3.0);
+	glVertex3f(2, 3.1, 3.0); glVertex3f(3.0, 3.1, 3.0); glVertex3f(3.0, 6.1, 3.0); glVertex3f(2, 6.1, 3.0);
 
 	// filling between the windows
-	glVertex3f(-1, 3.1, 3.0);
-	glVertex3f(1, 3.1, 3.0);
-	glVertex3f(1, 6.1, 3.0);
-	glVertex3f(-1, 6.1, 3.0);
+	glVertex3f(-1, 3.1, 3.0); glVertex3f(1, 3.1, 3.0); glVertex3f(1, 6.1, 3.0); glVertex3f(-1, 6.1, 3.0);
 
 	// filling the top of the windows
-	glVertex3f(-2, 5.2, 3.0);
-	glVertex3f(-1, 5.2, 3.0);
-	glVertex3f(-1, 6.1, 3.0);
-	glVertex3f(-2, 6.1, 3.0);
+	glVertex3f(-2, 5.2, 3.0); glVertex3f(2, 5.2, 3.0); glVertex3f(2, 6.1, 3.0); glVertex3f(-2, 6.1, 3.0);
 
-	glVertex3f(1, 5.2, 3.0);
-	glVertex3f(2, 5.2, 3.0);
-	glVertex3f(2, 6.1, 3.0);
-	glVertex3f(1, 6.1, 3.0);
 
 	// filling the bottom of the windows
-	glVertex3f(-2, 3.1, 3.0);
-	glVertex3f(-1, 3.1, 3.0);
-	glVertex3f(-1, 4.2, 3.0);
-	glVertex3f(-2, 4.2, 3.0);
+	glVertex3f(-2, 3.1, 3.0); glVertex3f(2, 3.1, 3.0); glVertex3f(2, 4.2, 3.0); glVertex3f(-2, 4.2, 3.0);
 
-	glVertex3f(1, 3.1, 3.0);
-	glVertex3f(2, 3.1, 3.0);
-	glVertex3f(2, 4.2, 3.0);
-	glVertex3f(1, 4.2, 3.0);
-
-	// right
-	glVertex3f(3.0, 3.1, -3.0);
-	glVertex3f(3.0, 3.1, 3.0);
-	glVertex3f(3.0, 6.1, 3.0);
-	glVertex3f(3.0, 6.1, -3.0);
-	// left
-	glVertex3f(-3.0, 3.1, -3.0);
-	glVertex3f(-3.0, 3.1, 3.0);
-	glVertex3f(-3.0, 6.1, 3.0);
-	glVertex3f(-3.0, 6.1, -3.0);
-	// back
-	glVertex3f(-3.0, 3.1, -3.0);
-	glVertex3f(3.0, 3.1, -3.0);
-	glVertex3f(3.0, 6.1, -3.0);
-	glVertex3f(-3.0, 6.1, -3.0);
 	glEnd();
+	// right
+	drawRLWall(3.0, 3.1, -3.0);
+	// left
+	drawRLWall(-3.0, 3.1, -3.0);
+	// back
+	drawBackWall(-3.0, 3.1, -3.0);
+	
 	// Roof is a Tetrahedron pyramid
 	glBegin(GL_TRIANGLES);
 	glColor3f(0.5f, 0.0f, 0.0f); // dark red color
 
 	// front
-	glVertex3f(-3.0, 6.1, 3.0);
-	glVertex3f(3.0, 6.1, 3.0);
-	glVertex3f(0.0, 8.0, 0.0);
+	glVertex3f(-3.0, 6.1, 3.0); glVertex3f(3.0, 6.1, 3.0); glVertex3f(0.0, 8.0, 0.0);
 
 	// back
-	glVertex3f(-3.0, 6.1, -3.0);
-	glVertex3f(3.0, 6.1, -3.0);
-	glVertex3f(0.0, 8.0, 0.0);
+	glVertex3f(-3.0, 6.1, -3.0); glVertex3f(3.0, 6.1, -3.0); glVertex3f(0.0, 8.0, 0.0);
 
 	// right
-	glVertex3f(3.0, 6.1, 3.0);
-	glVertex3f(3.0, 6.1, -3.0);
-	glVertex3f(0.0, 8.0, 0.0);
+	glVertex3f(3.0, 6.1, 3.0); glVertex3f(3.0, 6.1, -3.0); glVertex3f(0.0, 8.0, 0.0);
 
 	// left
-	glVertex3f(-3.0, 6.1, 3.0);
-	glVertex3f(-3.0, 6.1, -3.0);
-	glVertex3f(0.0, 8.0, 0.0);
+	glVertex3f(-3.0, 6.1, 3.0); glVertex3f(-3.0, 6.1, -3.0); glVertex3f(0.0, 8.0, 0.0);
+	
 	glEnd();
 
 	// fill the space between the first and second floor
 	glBegin(GL_QUADS);
 	glColor3f(0, 0, 0); // black color
-	glVertex3f(-3.0, 3.0, 3.0);
-	glVertex3f(3.0, 3.0, 3.0);
-	glVertex3f(3.0, 3.1, 3.0);
-	glVertex3f(-3.0, 3.1, 3.0);
+	glVertex3f(-3.0, 3.0, 3.0); glVertex3f(3.0, 3.0, 3.0); glVertex3f(3.0, 3.1, 3.0); glVertex3f(-3.0, 3.1, 3.0);
 
-	glVertex3f(3.0, 3.0, 3.0);
-	glVertex3f(3.0, 3.0, -3.0);
-	glVertex3f(3.0, 3.1, -3.0);
-	glVertex3f(3.0, 3.1, 3.0);
+	glVertex3f(3.0, 3.0, 3.0); glVertex3f(3.0, 3.0, -3.0); glVertex3f(3.0, 3.1, -3.0); glVertex3f(3.0, 3.1, 3.0);
 
-	glVertex3f(-3.0, 3.0, -3.0);
-	glVertex3f(-3.0, 3.0, 3.0);
-	glVertex3f(-3.0, 3.1, 3.0);
-	glVertex3f(-3.0, 3.1, -3.0);
+	glVertex3f(-3.0, 3.0, -3.0); glVertex3f(-3.0, 3.0, 3.0); glVertex3f(-3.0, 3.1, 3.0); glVertex3f(-3.0, 3.1, -3.0);
 
-	glVertex3f(-3.0, 3.0, -3.0);
-	glVertex3f(3.0, 3.0, -3.0);
-	glVertex3f(3.0, 3.1, -3.0);
-	glVertex3f(-3.0, 3.1, -3.0);
+	glVertex3f(-3.0, 3.0, -3.0); glVertex3f(3.0, 3.0, -3.0); glVertex3f(3.0, 3.1, -3.0); glVertex3f(-3.0, 3.1, -3.0);
 	glEnd();
 }
 
@@ -529,27 +414,10 @@ void updateCamera(GLfloat cameraX, GLfloat cameraY, GLfloat cameraZ, GLfloat pit
 LRESULT WINAPI WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
 {
 	
-	static PIXELFORMATDESCRIPTOR pfd = {
-		sizeof(PIXELFORMATDESCRIPTOR),   // size of this pfd  
-		1,                     // version number  
-		PFD_DRAW_TO_WINDOW |   // support window  
-		PFD_SUPPORT_OPENGL |   // support OpenGL  
-		PFD_DOUBLEBUFFER,      // double buffered  
-		PFD_TYPE_RGBA,         // RGBA type  
-		24,                    // 24-bit color depth  
-		0, 0, 0, 0, 0, 0,      // color bits ignored  
-		0,                     // no alpha buffer  
-		0,                     // shift bit ignored  
-		0,                     // no accumulation buffer  
-		0, 0, 0, 0,            // accum bits ignored  
-		32,                    // 32-bit z-buffer  
-		0,                     // no stencil buffer  
-		0,                     // no auxiliary buffer  
-		PFD_MAIN_PLANE,        // main layer  
-		0,                     // reserved  
-		0, 0, 0                // layer masks ignored  
-	};
-	// set timer with 60 fps
+	static PIXELFORMATDESCRIPTOR pfd = { sizeof(PIXELFORMATDESCRIPTOR), 1,
+										  PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,
+										  PFD_TYPE_RGBA, 24, 0, 0, 0, 0, 0, 0, 0, 32, 0, 0, 0, 0, 0, 0, PFD_MAIN_PLANE, 0, 0, 0, 0 };
+
 	
 	static HDC hdc;
 	static HGLRC hgl;
@@ -581,6 +449,7 @@ LRESULT WINAPI WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
 		
 		// Set camera position and orientation
 		updateCamera(cameraX, cameraY, cameraZ, pitch, yaw);
+		SetTimer(hwnd, 2, 1000 / 60, NULL);
 
 		glViewport(0, 0, w, h);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -622,6 +491,7 @@ LRESULT WINAPI WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
 						isDoorClosing = false;
 					}
 				}
+				SetTimer(hwnd, 1, 1000 / 60, NULL);
 				break;
 			}
 			case 'C':
@@ -642,46 +512,38 @@ LRESULT WINAPI WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
 						isDoorOpening = false;
 					}
 				}
+				SetTimer(hwnd, 1, 1000 / 60, NULL);
 				break;
 			}
 			case 'W': // Move forward
 				cameraX -= cameraSpeed * sin(yaw * PI / 180.0);
 				cameraZ -= cameraSpeed * cos(yaw * PI / 180.0);
-				move = 1;
 				break;
 			case 'S': // Move backward
 				cameraX += cameraSpeed * sin(yaw * PI / 180.0);
 				cameraZ += cameraSpeed * cos(yaw * PI / 180.0);
-				move = 1;
 				break;
 			case 'A': // Rotate left
 				yaw += rotationSpeed;
-				move = 1;
 				break;
 			case 'D': // Rotate right
 				yaw -= rotationSpeed;
-				move = 1;
 				break;
 			case 'E': // Look up
 				pitch += rotationSpeed;
-				move = 1;
 				break;
 			case 'Q': // Look down
 				pitch -= rotationSpeed;
-				move = 1;
 				break;
 			case VK_SPACE: // Move up
 				cameraY += cameraSpeed;
-				move = 1;
 				break;
 			case VK_CONTROL: // Move down
 				cameraY -= cameraSpeed;
-				move = 1;
 				break;
 			
 			default: break;
 		}
-		SetTimer(hwnd, 1, 1000 / 60, NULL);
 		updateCamera(cameraX, cameraY, cameraZ, pitch, yaw);
 		break;
 		
@@ -707,48 +569,56 @@ LRESULT WINAPI WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
 	case WM_TIMER:
 	{
 		bool isAnimating = false;
+		switch (wp)
+		{
+			case 1:
+			{
+				if (!isDoorOpen && doorAngle > -90.0f && isDoorOpening) {
+					doorAngle -= 5.0f;
+					isAnimating = true;
+				}
+				else if (isDoorOpen && doorAngle < 0.0f && isDoorClosing) {
+					doorAngle += 5.0f;
+					isAnimating = true;
+				}
 
-		if (!isDoorOpen && doorAngle > -90.0f && isDoorOpening) {
-			doorAngle -= 5.0f;
-			isAnimating = true;
-		}
-		else if (isDoorOpen && doorAngle < 0.0f && isDoorClosing) {
-			doorAngle += 5.0f;
-			isAnimating = true;
-		}
+				if (!isWindowOpen && windowAngle > -90.0f && isWindowOpening) {
+					windowAngle -= 5.0f;
+					isAnimating = true;
+				}
+				else if (isWindowOpen && windowAngle < 0.0f && isWindowClosing) {
+					windowAngle += 5.0f;
+					isAnimating = true;
+				}
 
-		if (!isWindowOpen && windowAngle > -90.0f && isWindowOpening) {
-			windowAngle -= 5.0f;
-			isAnimating = true;
+				if (isAnimating) {
+					glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+					glEnable(GL_DEPTH_TEST);
+					DrawScene();
+					glFlush();
+					SwapBuffers(hdc);
+				}
+				else {
+					KillTimer(hwnd, 1);
+					isDoorOpen = !isDoorOpen;
+					isWindowOpen = !isWindowOpen;
+				}
+				break;
+			}
+			case 2:
+			{
+				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+				glEnable(GL_DEPTH_TEST);
+				DrawScene();
+				glFlush();
+				SwapBuffers(hdc);
+				break;
+			}
+			default:
+				break;
 		}
-		else if (isWindowOpen && windowAngle < 0.0f && isWindowClosing) {
-			windowAngle += 5.0f;
-			isAnimating = true;
-		}
-		if (move) {
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			glEnable(GL_DEPTH_TEST);
-			DrawScene();
-			glFlush();
-			SwapBuffers(hdc);
-			move = 0;
-		}
-		if (isAnimating) {
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			glEnable(GL_DEPTH_TEST);
-			DrawScene();
-			glFlush();
-			SwapBuffers(hdc);
-		}
-		else {
-			KillTimer(hwnd, 1);
-			isDoorOpen = !isDoorOpen;
-			isWindowOpen = !isWindowOpen;
-		}
-		
 		break;
 	}
-
 	case WM_DESTROY:
 		wglMakeCurrent(NULL, NULL);
 		wglDeleteContext(hgl);
@@ -759,8 +629,6 @@ LRESULT WINAPI WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
 	}
 	return 0;
 }
-
-
 
 
 int APIENTRY WinMain(HINSTANCE hi, HINSTANCE pi, LPSTR c, int ns)
