@@ -590,14 +590,14 @@ LRESULT WINAPI WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
 			case 'F':
 			{
 				if (bicycleRedus > 5.0f) {
-					bicycleRedus -= 0.5;
+					bicycleRedus += 0.5;
 				}
 				break;
 			}
 			case 'B':
 			{
 				if (bicycleRedus < 15.0f) {
-					bicycleRedus += 0.5;
+					bicycleRedus -= 0.5;
 				}
 				break;
 			}
