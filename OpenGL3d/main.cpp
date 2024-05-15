@@ -229,7 +229,6 @@ void drawBuilding() {
 	glRotatef(windowAngle, 0, 1, 0); // Rotate the window around the y-axis
 	glTranslatef(2.0, -1.2, -3.01); // Translate back to the original position
 	drawWindows(-2, 1.2, 3.01); // first floor left window
-	drawCube(-2, 1.2, 3.01, -2, 2.2, 3.01, 0.01); // first floor left window
 	drawWindows(-2, 4.2, 3.01); // second floor left window
 	glPopMatrix();
 
