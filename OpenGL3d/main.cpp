@@ -229,6 +229,7 @@ void drawBuilding() {
 	glRotatef(windowAngle, 0, 1, 0); // Rotate the window around the y-axis
 	glTranslatef(2.0, -1.2, -3.01); // Translate back to the original position
 	drawWindows(-2, 1.2, 3.01); // first floor left window
+	drawCube(-2, 1.2, 3.01, -2, 2.2, 3.01, 0.01); // first floor left window
 	drawWindows(-2, 4.2, 3.01); // second floor left window
 	glPopMatrix();
 
@@ -392,10 +393,10 @@ void drawFrame() {
 
 void drawSeat() {
 	glColor3f(0.5f, 0.35f, 0.05f); // Brown color for seat
-	glBegin(GL_QUADS);
+	
 	// seat
 	drawCube(-0.1, 0.2, 0.12, 0.1, 0.25, 0.12, 0.03);
-	glEnd();
+
 }
 
 void drawHandlebars() {
@@ -589,14 +590,14 @@ LRESULT WINAPI WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
 			}
 			case 'F':
 			{
-				if (bicycleRedus > 5.0f) {
+				if (bicycleRedus < 15.0f) {
 					bicycleRedus += 0.5;
 				}
 				break;
 			}
 			case 'B':
 			{
-				if (bicycleRedus < 15.0f) {
+				if (bicycleRedus > 5.0f) {
 					bicycleRedus -= 0.5;
 				}
 				break;
