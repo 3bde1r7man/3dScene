@@ -13,9 +13,32 @@ const float PI = 3.14159265358979323846;
 
 GLfloat doorAngle = 0.0f; // Angle of the door
 GLfloat windowAngle = 0.0f; // Angle of the windows
-bool isDoorOpening = false, isDoorClosing = false, isDoorOpen = false;
-bool isWindowOpening = false, isWindowClosing = false, isWindowOpen = false;
+GLfloat wheelAngle = 0.0f; // Angle of the wheels
+GLfloat angle = 0.0f; // Angle of bicycle around the y-axis
+GLfloat bicycleRedus = 8.0f; // Radius of the bicycle around the origin
+bool isDoorOpening = false, isDoorOpen = false;
+bool isWindowOpening = false, isWindowOpen = false;
+bool wheelMid = true, rotatingMid = false, isWheelRotating = false, isWheelRotatingRight = false;
+bool rotateBicycle = false;
 
+// Function prototypes
+void drawWindows(GLfloat x, GLfloat y, GLfloat z);
+void drawDoor();
+void drawRLWall(GLfloat x, GLfloat y, GLfloat z);
+void drawBackWall(GLfloat x, GLfloat y, GLfloat z);
+void drawRoof();
+void drawWalls();
+void drawBuilding();
+void drawWheel(float centerX, float centerY, float centerZ);
+void drawCube(float x1, float y1, float z1, float x2, float y2, float z2, float width);
+void drawFrame();
+void drawSeat();
+void drawHandlebars();
+void drawBicycle();
+void drawPlane();
+void idle();
+void DrawScene();
+void updateCamera(GLfloat cameraX, GLfloat cameraY, GLfloat cameraZ, GLfloat pitch, GLfloat yaw);
 
 
 // takes 3 points the left bottom (x,y,z) 
@@ -84,6 +107,26 @@ void drawBackWall(GLfloat x, GLfloat y, GLfloat z) {
 	glBegin(GL_QUADS);
 	glColor3f(0.3f, 0.3f, 0.3f); // Dark grey color for the wall
 	glVertex3f(x, y, z); glVertex3f(-x, y, z); glVertex3f(-x, y + 3, z); glVertex3f(x, y + 3, z);
+	glEnd();
+}
+
+void drawRoof() {
+	// Roof is a Tetrahedron pyramid
+	glBegin(GL_TRIANGLES);
+	glColor3f(0.5f, 0.0f, 0.0f); // dark red color
+
+	// front
+	glVertex3f(-3.0, 6.1, 3.0); glVertex3f(3.0, 6.1, 3.0); glVertex3f(0.0, 8.0, 0.0);
+
+	// back
+	glVertex3f(-3.0, 6.1, -3.0); glVertex3f(3.0, 6.1, -3.0); glVertex3f(0.0, 8.0, 0.0);
+
+	// right
+	glVertex3f(3.0, 6.1, 3.0); glVertex3f(3.0, 6.1, -3.0); glVertex3f(0.0, 8.0, 0.0);
+
+	// left
+	glVertex3f(-3.0, 6.1, 3.0); glVertex3f(-3.0, 6.1, -3.0); glVertex3f(0.0, 8.0, 0.0);
+
 	glEnd();
 }
 
@@ -160,24 +203,6 @@ void drawWalls() {
 	// back
 	drawBackWall(-3.0, 3.1, -3.0);
 	
-	// Roof is a Tetrahedron pyramid
-	glBegin(GL_TRIANGLES);
-	glColor3f(0.5f, 0.0f, 0.0f); // dark red color
-
-	// front
-	glVertex3f(-3.0, 6.1, 3.0); glVertex3f(3.0, 6.1, 3.0); glVertex3f(0.0, 8.0, 0.0);
-
-	// back
-	glVertex3f(-3.0, 6.1, -3.0); glVertex3f(3.0, 6.1, -3.0); glVertex3f(0.0, 8.0, 0.0);
-
-	// right
-	glVertex3f(3.0, 6.1, 3.0); glVertex3f(3.0, 6.1, -3.0); glVertex3f(0.0, 8.0, 0.0);
-
-	// left
-	glVertex3f(-3.0, 6.1, 3.0); glVertex3f(-3.0, 6.1, -3.0); glVertex3f(0.0, 8.0, 0.0);
-	
-	glEnd();
-
 	// fill the space between the first and second floor
 	glBegin(GL_QUADS);
 	glColor3f(0, 0, 0); // black color
@@ -195,6 +220,8 @@ void drawWalls() {
 void drawBuilding() {
 	// draw the walls
 	drawWalls();
+	// draw the roof
+	drawRoof();
 
 	//left windows
 	glPushMatrix();
@@ -247,6 +274,7 @@ void drawWheel(float centerX, float centerY, float centerZ) {
 	glPushMatrix();
 	glTranslatef(centerX, centerY, centerZ);
 	glBegin(GL_QUAD_STRIP);
+	glColor3f(0.5f, 0.35f, 0.05f); // Brown color for the wheel
 	for (int i = 0; i <= 360; i++) {
 		float angle = i * PI / 180.0;
 		glVertex3f(outerRadius * cos(angle), outerRadius * sin(angle), 0.03);
@@ -254,10 +282,20 @@ void drawWheel(float centerX, float centerY, float centerZ) {
 	}
 	for (int i = 0; i <= 360; i++) {
 		float angle = i * PI / 180.0;
-		glVertex3f(outerRadius * cos(angle), outerRadius * sin(angle), -0.018);
-		glVertex3f(innerRadius * cos(angle), innerRadius * sin(angle), -0.018);
+		glVertex3f(outerRadius * cos(angle), outerRadius * sin(angle), 0.0);
+		glVertex3f(innerRadius * cos(angle), innerRadius * sin(angle), 0.0);
 	}
 	glEnd();
+	// Spokes
+	for (int i = 0; i < numSpokes; i++) {
+		glPushMatrix();
+		glRotatef(i * angleBetweenSpokes, 0.0, 0.0, 1.0);
+		glBegin(GL_LINES);
+		glVertex3f(0.0, 0.0, 0.0);
+		glVertex3f(0.0, radius, 0.0);
+		glEnd();
+		glPopMatrix();
+	}
 	glPopMatrix();
 	// Cylinder filling
 	glPushMatrix();
@@ -344,7 +382,7 @@ void drawFrame() {
 	drawCube(0.3, -0.3, 0.1, 0.2, 0.0, 0.1, 0.01);
 	drawCube(-0.2, 0.0, 0.1, 0.2, 0.0, 0.1, 0.01);
 	// drawCube that connects the frame to the handlebars 
-	drawCube(0.5, -0.3, 0.1, 0.5, 0.1, 0.1, 0.01);
+	drawCube(0.5, -0.3, 0.1, 0.5, 0.2, 0.1, 0.01);
 
 	// Seat support
 	drawCube(0.0, 0.0, 0.1, 0.0, 0.2, 0.1, 0.01);
@@ -363,24 +401,40 @@ void drawSeat() {
 void drawHandlebars() {
 	glColor3f(0.5f, 0.35f, 0.05f); // Brown color for handlebars
 	glPushMatrix();
-	glTranslatef(5, 0.9, 3.9);
+	glTranslatef(0.5, 0.2, 0.25);
 	glRotatef(180, 0, 1, 0);
 	GLUquadric* quad;
 	quad = gluNewQuadric();
-	gluCylinder(quad, 0.04, 0.04, 0.4, 12, 3);
+	gluCylinder(quad, 0.04, 0.04, 0.3, 12, 3);
 	glPopMatrix();
 }
 
+
+
 void drawBicycle() {
-	drawWheel(4, 0.5, 4); // Left wheel
-	drawWheel(5, 0.5, 4);  // Right wheel
+	glPushMatrix();
+	glRotatef(-angle, 0.0f, 1.0f, 0.0f);
+	glTranslatef(0.5, 0.7, bicycleRedus);
+	glPushMatrix();
+	glTranslated(0.5, -0.3, 0.1);
+	glRotatef(wheelAngle, 0, 1, 0);
+	glTranslatef(-0.5, 0.3, -0.1);
+	drawWheel(0.5, -0.3, 0.1);  // Right wheel
+	drawHandlebars();
+	glPopMatrix();
+	drawWheel(-0.5, -0.3, 0.1); // Left wheel
 	drawFrame();
 	drawSeat();
-	drawHandlebars();
+	glPopMatrix();
+	
 }
 
 
+void idle() {
+	angle -= 0.9f; // Increment the angle to rotate the cube
+	if (angle > 360.0f) angle -= 360.0f; // Keep the angle within 0-360 range
 
+}
 
 // draw a plane with a size of 100x100 under the building
 void drawPlane() {
@@ -396,7 +450,7 @@ void drawPlane() {
 void DrawScene() {
 	drawPlane();
 	drawBuilding();
-	//drawBicycle();
+	drawBicycle();
 }
 
 void updateCamera(GLfloat cameraX, GLfloat cameraY, GLfloat cameraZ, GLfloat pitch, GLfloat yaw) {
@@ -422,7 +476,7 @@ LRESULT WINAPI WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
 	static HDC hdc;
 	static HGLRC hgl;
 	static int w, h;
-	static GLfloat cameraX = 5.0f, cameraY = 10.0f, cameraZ = 40.0f;
+	static GLfloat cameraX = 5.0f, cameraY = 8.0f, cameraZ = 30.0f;
 	static GLfloat pitch = 0.0f, yaw = 0.0f; // Pitch and yaw angles
 	static GLfloat cameraSpeed = 1.0f;
 	static GLfloat rotationSpeed = 1.0f; // Adjust rotation speed as needed
@@ -449,7 +503,7 @@ LRESULT WINAPI WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
 		
 		// Set camera position and orientation
 		updateCamera(cameraX, cameraY, cameraZ, pitch, yaw);
-		SetTimer(hwnd, 2, 1000 / 60, NULL);
+		SetTimer(hwnd, 2, 1000 / 120, NULL); // set the timer to 120 fps
 
 		glViewport(0, 0, w, h);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -480,7 +534,6 @@ LRESULT WINAPI WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
 					if (!isWindowOpen)
 					{
 						isWindowOpening = true;
-						isWindowClosing = false;
 					}
 				}
 				else
@@ -488,7 +541,6 @@ LRESULT WINAPI WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
 					if (!isDoorOpen)
 					{
 						isDoorOpening = true;
-						isDoorClosing = false;
 					}
 				}
 				SetTimer(hwnd, 1, 1000 / 60, NULL);
@@ -500,7 +552,6 @@ LRESULT WINAPI WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
 				{
 					if (isWindowOpen)
 					{
-						isWindowClosing = true;
 						isWindowOpening = false;
 					}
 				}
@@ -508,11 +559,46 @@ LRESULT WINAPI WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
 				{
 					if (isDoorOpen)
 					{
-						isDoorClosing = true;
 						isDoorOpening = false;
 					}
 				}
 				SetTimer(hwnd, 1, 1000 / 60, NULL);
+				break;
+			}
+			case 'R':
+			{
+				isWheelRotating = true;
+				isWheelRotatingRight = true;
+				wheelMid = false;
+				SetTimer(hwnd, 1, 1000 / 60, NULL);
+				break;
+			}
+			case 'L':
+			{
+				isWheelRotating = true;
+				isWheelRotatingRight = false;
+				wheelMid = false;
+				SetTimer(hwnd, 1, 1000 / 60, NULL);
+				break;
+			}
+			case 'T':
+			{
+				rotatingMid = true;
+				SetTimer(hwnd, 1, 1000 / 60, NULL);
+				break;
+			}
+			case 'F':
+			{
+				if (bicycleRedus > 5.0f) {
+					bicycleRedus -= 0.5;
+				}
+				break;
+			}
+			case 'B':
+			{
+				if (bicycleRedus < 15.0f) {
+					bicycleRedus += 0.5;
+				}
 				break;
 			}
 			case 'W': // Move forward
@@ -546,25 +632,19 @@ LRESULT WINAPI WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
 		}
 		updateCamera(cameraX, cameraY, cameraZ, pitch, yaw);
 		break;
-		
 	case WM_LBUTTONDOWN:
-		if (isDoorOpen) {
-			isDoorClosing = true;
-			isDoorOpening = false;
+		if (!rotateBicycle)
+		{
+			rotateBicycle = true;
+			SetTimer(hwnd, 3, 1000 / 120, NULL);
 		}
-		else {
-			isDoorOpening = true;
-			isDoorClosing = false;
+		break;
+	case WM_RBUTTONDOWN:
+		if (rotateBicycle)
+		{
+			rotateBicycle = false;
+			KillTimer(hwnd, 3);
 		}
-		if (isWindowOpen) {
-			isWindowClosing = true;
-			isWindowOpening = false;
-		}
-		else {
-			isWindowOpening = true;
-			isWindowClosing = false;
-		}
-		SetTimer(hwnd, 1, 1000 / 60, NULL);
 		break;
 	case WM_TIMER:
 	{
@@ -577,7 +657,7 @@ LRESULT WINAPI WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
 					doorAngle -= 5.0f;
 					isAnimating = true;
 				}
-				else if (isDoorOpen && doorAngle < 0.0f && isDoorClosing) {
+				else if (isDoorOpen && doorAngle < 0.0f && !isDoorOpening) {
 					doorAngle += 5.0f;
 					isAnimating = true;
 				}
@@ -586,8 +666,28 @@ LRESULT WINAPI WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
 					windowAngle -= 5.0f;
 					isAnimating = true;
 				}
-				else if (isWindowOpen && windowAngle < 0.0f && isWindowClosing) {
+				else if (isWindowOpen && windowAngle < 0.0f && !isWindowOpening) {
 					windowAngle += 5.0f;
+					isAnimating = true;
+				}
+				if (rotatingMid && !wheelMid) {
+					if (wheelAngle > 0.0f) {
+						wheelAngle -= 5.0f;
+						isAnimating = true;
+					}
+					else if (wheelAngle < 0.0f) {
+						wheelAngle += 5.0f;
+						isAnimating = true;
+					}
+				}
+				else if (isWheelRotating && isWheelRotatingRight && wheelAngle > -45.0f)
+				{
+					wheelAngle -= 5.0f;
+					isAnimating = true;
+				}
+				else if (isWheelRotating && !isWheelRotatingRight && wheelAngle < 45.0f)
+				{
+					wheelAngle += 5.0f;
 					isAnimating = true;
 				}
 
@@ -602,6 +702,12 @@ LRESULT WINAPI WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
 					KillTimer(hwnd, 1);
 					isDoorOpen = !isDoorOpen;
 					isWindowOpen = !isWindowOpen;
+					isWheelRotating = false;
+					if (rotatingMid)
+					{
+						wheelMid = !wheelMid;
+					}
+					rotatingMid = false;
 				}
 				break;
 			}
@@ -613,6 +719,16 @@ LRESULT WINAPI WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
 				glFlush();
 				SwapBuffers(hdc);
 				break;
+			}
+			case 3:
+			{
+				idle();
+				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+				glEnable(GL_DEPTH_TEST);
+				DrawScene();
+				glFlush();
+				SwapBuffers(hdc);
+
 			}
 			default:
 				break;
