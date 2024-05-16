@@ -22,15 +22,14 @@ bool wheelMid = true, rotatingMid = false, isWheelRotating = false, isWheelRotat
 bool rotateBicycle = false;
 
 // Function prototypes
+void draw3dObject(GLfloat x1, GLfloat y1, GLfloat z1, GLfloat x2, GLfloat y2, GLfloat z2, GLfloat R, GLfloat G, GLfloat B);
 void drawWindows(GLfloat x, GLfloat y, GLfloat z);
 void drawDoor();
-void drawRLWall(GLfloat x, GLfloat y, GLfloat z);
-void drawBackWall(GLfloat x, GLfloat y, GLfloat z);
+void drawWall(GLfloat x, GLfloat y, GLfloat z);
 void drawRoof();
 void drawWalls();
 void drawBuilding();
 void drawWheel(float centerX, float centerY, float centerZ);
-void drawCube(float x1, float y1, float z1, float x2, float y2, float z2, float width);
 void drawFrame();
 void drawSeat();
 void drawHandlebars();
@@ -41,74 +40,62 @@ void DrawScene();
 void updateCamera(GLfloat cameraX, GLfloat cameraY, GLfloat cameraZ, GLfloat pitch, GLfloat yaw);
 
 
-// takes 3 points the left bottom (x,y,z) 
-void drawWindows(GLfloat x, GLfloat y, GLfloat z) {
+// draw 3d object that take the bottom near left and top far right points and draw a cube
+void draw3dObject(GLfloat x1, GLfloat y1, GLfloat z1, GLfloat x2, GLfloat y2, GLfloat z2, GLfloat R, GLfloat G, GLfloat B) {
+
+	GLfloat vertices[8][3] = {
+		{x1, y1, z1}, {x2, y1, z1}, {x2, y2, z1}, {x1, y2, z1},
+		{x1, y1, z2}, {x2, y1, z2}, {x2, y2, z2}, {x1, y2, z2}
+	};
+
 	glBegin(GL_QUADS);
-	glColor3f(0.0f, 0.5f, 0.5f); // Dark cyan color
-	glVertex3f(x, y, z); glVertex3f(x + 0.5, y, z); glVertex3f(x + 0.5, y + 1, z); glVertex3f(x, y + 1, z);
-
-	// add depth to the windows to inside the building
-	// color gray
-	glColor3f(0.6, 0.6, 0.6);
-	glVertex3f(x, y, z - 0.1); glVertex3f(x + 0.5, y, z - 0.1); glVertex3f(x + 0.5, y + 1, z - 0.1); glVertex3f(x, y + 1, z - 0.1);
-
-	// fill the space between the 2 quads to make the window look solid
-	glVertex3f(x + 0.5, y, z); glVertex3f(x + 0.5, y, z - 0.1); glVertex3f(x + 0.5, y + 1, z - 0.1); glVertex3f(x + 0.5, y + 1, z);
-
-	glVertex3f(x, y + 1, z); glVertex3f(x + 0.5, y + 1, z); glVertex3f(x + 0.5, y + 1, z - 0.1); glVertex3f(x, y + 1, z - 0.1);
-
-	glVertex3f(x, y, z); glVertex3f(x, y, z - 0.1); glVertex3f(x, y + 1, z - 0.1); glVertex3f(x, y + 1, z);
-
-	glVertex3f(x, y, z); glVertex3f(x + 0.5, y, z); glVertex3f(x + 0.5, y, z - 0.1); glVertex3f(x, y, z - 0.1);
-
+	// Front face
+	glVertex3fv(vertices[0]); glVertex3fv(vertices[1]); glVertex3fv(vertices[2]); glVertex3fv(vertices[3]);
+	glColor3f(R, G, B); 
+	// Back face
+	glVertex3fv(vertices[4]); glVertex3fv(vertices[5]); glVertex3fv(vertices[6]); glVertex3fv(vertices[7]);
+	// Left face
+	glVertex3fv(vertices[0]); glVertex3fv(vertices[4]); glVertex3fv(vertices[7]); glVertex3fv(vertices[3]);
+	// Right face
+	glVertex3fv(vertices[1]); glVertex3fv(vertices[5]); glVertex3fv(vertices[6]); glVertex3fv(vertices[2]);
+	// Top face
+	glVertex3fv(vertices[3]); glVertex3fv(vertices[2]); glVertex3fv(vertices[6]); glVertex3fv(vertices[7]);
+	// Bottom face
+	glVertex3fv(vertices[0]); glVertex3fv(vertices[1]); glVertex3fv(vertices[5]); glVertex3fv(vertices[4]);
 	glEnd();
+	
 }
 
 
+// draw a window with a size of 0.5 * 1 * 0.1
+void drawWindows(GLfloat x, GLfloat y, GLfloat z) {
+	glColor3f(0.0f, 0.5f, 0.5f); // Dark cyan color
+	draw3dObject(x, y, z, x + 0.5, y + 1, z - 0.1, 0.6, 0.6, 0.6);  // Draw the window
+}
 
+
+// draw a door with a size of 0.5 * 1.8 * 0.1
 void drawDoor() {
-	glPushMatrix(); // Save the current matrix state
-	glTranslatef(-0.5, 0.0, 3.01); // Translate the door to its original position
-	glRotatef(doorAngle, 0, 1, 0); // Rotate the door around the y-axis
-	glTranslated(0.5, 0.0, -3.01); // Translate the door back to its position
-	glBegin(GL_QUADS);
+	glPushMatrix();
+	glTranslatef(-0.5, 0.0, 3.01);
+	glRotatef(doorAngle, 0, 1, 0); 
+	glTranslated(0.5, 0.0, -3.01);
 	glColor3f(0.3, 0.2, 0.1); // Dark brown for the door
-	glVertex3f(-0.5, 0.0, 3.01); glVertex3f(0.5, 0.0, 3.01); glVertex3f(0.5, 1.8, 3.01); glVertex3f(-0.5, 1.8, 3.01);
-	
-	// add depth to the door to inside the building
-	// color gray
-	glColor3f(0.6, 0.6, 0.6); glVertex3f(-0.5, 0.0, 2.9); glVertex3f(0.5, 0.0, 2.9); glVertex3f(0.5, 1.8, 2.9); glVertex3f(-0.5, 1.8, 2.9);
-
-	// fill the space between the 2 quads to make the door look solid
-	glVertex3f(-0.5, 0.0, 3.01); glVertex3f(-0.5, 0.0, 2.9); glVertex3f(-0.5, 1.8, 2.9); glVertex3f(-0.5, 1.8, 3.01);
-
-	glVertex3f(0.5, 0.0, 3.01); glVertex3f(0.5, 0.0, 2.9); glVertex3f(0.5, 1.8, 2.9); glVertex3f(0.5, 1.8, 3.01);
-	// the upper part of the door
-	glVertex3f(-0.5, 1.8, 3.01); glVertex3f(0.5, 1.8, 3.01); glVertex3f(0.5, 1.8, 2.9); glVertex3f(-0.5, 1.8, 2.9);
-
+	draw3dObject(-0.5, 0.0, 3.01, 0.5, 1.8, 2.9, 0.6, 0.6, 0.6); // Draw the door with grey depth color
+	glBegin(GL_QUADS);
 	// make a handle for the door like a knob
 	glColor3f(1.0f, 1.0f, 0.0f); // Yellow color
 	glVertex3f(0.4, 0.6, 3.02); glVertex3f(0.5, 0.6, 3.02); glVertex3f(0.5, 0.7, 3.02); glVertex3f(0.4, 0.7, 3.02);
-	
 	glEnd();
+	
 	glPopMatrix(); // Restore the previous matrix state
 }
-// this draw a 3 * 3 right and left wall
-void drawRLWall(GLfloat x, GLfloat y, GLfloat z) {
-
-	glBegin(GL_QUADS);
+// this draw a 3 * 3 * 0.1 right and left wall
+void drawWall(GLfloat x, GLfloat y, GLfloat z) {
 	glColor3f(0.3f, 0.3f, 0.3f); // Dark grey color for the wall
-	glVertex3f(x, y, z); glVertex3f(x, y, -z); glVertex3f(x, y + 3, -z); glVertex3f(x, y + 3, z);
-	glEnd();
+	draw3dObject(x, y, z, x, y + 3, -z, 0.3, 0.3, 0.3);
 }
 
-// this draw a 3 * 3 back wall
-void drawBackWall(GLfloat x, GLfloat y, GLfloat z) {
-	glBegin(GL_QUADS);
-	glColor3f(0.3f, 0.3f, 0.3f); // Dark grey color for the wall
-	glVertex3f(x, y, z); glVertex3f(-x, y, z); glVertex3f(-x, y + 3, z); glVertex3f(x, y + 3, z);
-	glEnd();
-}
 
 void drawRoof() {
 	// Roof is a Tetrahedron pyramid
@@ -132,9 +119,9 @@ void drawRoof() {
 
 void drawWalls() {
 	glBegin(GL_QUADS);
+	// first floor
 	// front
 	// plane for the first floor with color off white
-	
 	glColor3f(0.7f, 0.7f, 0.7f);
 	glVertex3f(-3.0, 0.1, 3.0); glVertex3f(3.0, 0.1, 3.0); glVertex3f(3.0, 0.1, -3.0); glVertex3f(-3.0, 0.1, -3.0);
 
@@ -165,11 +152,17 @@ void drawWalls() {
 
 
 	// right
-	drawRLWall(3.0, 0.0, -3.0);
+	drawWall(3.0, 0.0, -3.0);
 	// left
-	drawRLWall(-3.0, 0.0, -3.0);
+	drawWall(-3.0, 0.0, -3.0);
 	// back
-	drawBackWall(-3.0, 0.0, -3.0);
+	glPushMatrix();
+	glTranslatef(-3.0, 0.0, -3.0);
+	glRotatef(90, 0, 1, 0);
+	glTranslatef(3.0, 0.0, 3.0);
+	drawWall(-3.0, 0.0, -3.0); // first floor
+	drawWall(-3.0, 3.1, -3.0); // second floor
+	glPopMatrix();
 
 
 	// Second floor
@@ -197,13 +190,11 @@ void drawWalls() {
 
 	glEnd();
 	// right
-	drawRLWall(3.0, 3.1, -3.0);
+	drawWall(3.0, 3.1, -3.0);
 	// left
-	drawRLWall(-3.0, 3.1, -3.0);
-	// back
-	drawBackWall(-3.0, 3.1, -3.0);
-	
-	// fill the space between the first and second floor
+	drawWall(-3.0, 3.1, -3.0);
+
+	// add split between the first and second floor
 	glBegin(GL_QUADS);
 	glColor3f(0, 0, 0); // black color
 	glVertex3f(-3.0, 3.0, 3.0); glVertex3f(3.0, 3.0, 3.0); glVertex3f(3.0, 3.1, 3.0); glVertex3f(-3.0, 3.1, 3.0);
@@ -225,34 +216,34 @@ void drawBuilding() {
 
 	//left windows
 	glPushMatrix();
-	glTranslatef(-2.0, 1.2, 3.01); // Translate to the first floor left window position
-	glRotatef(windowAngle, 0, 1, 0); // Rotate the window around the y-axis
-	glTranslatef(2.0, -1.2, -3.01); // Translate back to the original position
+	glTranslatef(-2.0, 1.2, 3.01); 
+	glRotatef(windowAngle, 0, 1, 0); 
+	glTranslatef(2.0, -1.2, -3.01); 
 	drawWindows(-2, 1.2, 3.01); // first floor left window
 	drawWindows(-2, 4.2, 3.01); // second floor left window
 	glPopMatrix();
 
 	glPushMatrix();
-	glTranslated(1.0, 1.2, 3.01); // Translate to the first floor right window position
-	glRotatef(windowAngle, 0, 1, 0); // Rotate the window around the y-axis
-	glTranslated(-1.0, -1.2, -3.01); // Translate back to the original position
+	glTranslated(1.0, 1.2, 3.01);
+	glRotatef(windowAngle, 0, 1, 0);
+	glTranslated(-1.0, -1.2, -3.01);
 	drawWindows(1, 1.2, 3.01); //  first floor right window
 	drawWindows(1, 4.2, 3.01); // second floor right window
 	glPopMatrix();
 
 	//right windows
 	glPushMatrix();
-	glTranslated(-1, 1.2, 3.01); // Translate to the first floor left window position
-	glRotatef(-windowAngle, 0, 1, 0); // Rotate the window around the y-axis
-	glTranslated(1, -1.2, -3.01); // Translate back to the original position
+	glTranslated(-1, 1.2, 3.01);
+	glRotatef(-windowAngle, 0, 1, 0);
+	glTranslated(1, -1.2, -3.01);
 	drawWindows(-1.5, 1.2, 3.01); // first floor left window
 	drawWindows(-1.5, 4.2, 3.01); // second floor left window
 	glPopMatrix();
 
 	glPushMatrix();
-	glTranslated(2.0, 1.2, 3.01); // Translate to the first floor right window position
-	glRotatef(-windowAngle, 0, 1, 0); // Rotate the window around the y-axis
-	glTranslated(-2, -1.2, -3.01); // Translate back to the original position
+	glTranslated(2.0, 1.2, 3.01);
+	glRotatef(-windowAngle, 0, 1, 0);
+	glTranslated(-2, -1.2, -3.01);
 	drawWindows(1.5, 1.2, 3.01); // first floor right window
 	drawWindows(1.5, 4.2, 3.01); // second floor right window
 	glPopMatrix();
@@ -307,99 +298,45 @@ void drawWheel(float centerX, float centerY, float centerZ) {
 	glPopMatrix();
 }
 
-// Function to draw a cube between two points
-void drawCube(float x1, float y1, float z1, float x2, float y2, float z2, float width) {
-	// Vector from (x1, y1, z1) to (x2, y2, z2)
-	float dx = x2 - x1;
-	float dy = y2 - y1;
-	float dz = z2 - z1;
-
-	// Normalize the direction vector
-	float length = sqrt(dx * dx + dy * dy + dz * dz);
-	dx /= length;
-	dy /= length;
-	dz /= length;
-
-	// Perpendicular vectors to (dx, dy, dz)
-	float px, py, pz, qx, qy, qz;
-	if (fabs(dy) > fabs(dx)) {
-		px = 0;
-		py = -dz;
-		pz = dy;
-	}
-	else {
-		px = dz;
-		py = 0;
-		pz = -dx;
-	}
-
-	// Normalize p
-	float plength = sqrt(px * px + py * py + pz * pz);
-	px /= plength;
-	py /= plength;
-	pz /= plength;
-
-	// Compute q as the cross product of d and p
-	qx = dy * pz - dz * py;
-	qy = dz * px - dx * pz;
-	qz = dx * py - dy * px;
-
-	// Coordinates of the corners of the cube
-	float corners[8][3] = {
-		{x1 + width * (px + qx), y1 + width * (py + qy), z1 + width * (pz + qz)},
-		{x1 + width * (-px + qx), y1 + width * (-py + qy), z1 + width * (-pz + qz)},
-		{x1 + width * (-px - qx), y1 + width * (-py - qy), z1 + width * (-pz - qz)},
-		{x1 + width * (px - qx), y1 + width * (py - qy), z1 + width * (pz - qz)},
-		{x2 + width * (px + qx), y2 + width * (py + qy), z2 + width * (pz + qz)},
-		{x2 + width * (-px + qx), y2 + width * (-py + qy), z2 + width * (-pz + qz)},
-		{x2 + width * (-px - qx), y2 + width * (-py - qy), z2 + width * (-pz - qz)},
-		{x2 + width * (px - qx), y2 + width * (py - qy), z2 + width * (pz - qz)}
-	};
-
-	// Draw the cube using quads
-	glBegin(GL_QUADS);
-	// Front face
-	glVertex3fv(corners[0]); glVertex3fv(corners[1]); glVertex3fv(corners[2]); glVertex3fv(corners[3]);
-	// Back face
-	glVertex3fv(corners[4]); glVertex3fv(corners[5]); glVertex3fv(corners[6]); glVertex3fv(corners[7]);
-	// Left face
-	glVertex3fv(corners[0]); glVertex3fv(corners[3]); glVertex3fv(corners[7]); glVertex3fv(corners[4]);
-	// Right face
-	glVertex3fv(corners[1]); glVertex3fv(corners[2]); glVertex3fv(corners[6]); glVertex3fv(corners[5]);
-	// Top face
-	glVertex3fv(corners[3]); glVertex3fv(corners[2]); glVertex3fv(corners[6]); glVertex3fv(corners[7]);
-	// Bottom face
-	glVertex3fv(corners[0]); glVertex3fv(corners[1]); glVertex3fv(corners[5]); glVertex3fv(corners[4]);
-	glEnd();
-}
 
 void drawFrame() {
 	glColor3f(0.0, 0.0, 0.0); // Black color for frame
 
 	// Main frame
-	drawCube(-0.5, -0.3, 0.1, 0.5, -0.3, 0.1, 0.01);
-	drawCube(-0.3, -0.3, 0.1, -0.2, 0.0, 0.1, 0.01);
-	drawCube(0.3, -0.3, 0.1, 0.2, 0.0, 0.1, 0.01);
-	drawCube(-0.2, 0.0, 0.1, 0.2, 0.0, 0.1, 0.01);
+	draw3dObject(-0.5, -0.3, 0.1, 0.5, -0.27, 0.09, 0.0, 0.0, 0.0);
+	draw3dObject(-0.2, 0.0, 0.1, 0.2, 0.03, 0.09, 0.0, 0.0, 0.0);
+
+	glPushMatrix();
+	glTranslatef(-0.3, -0.25, 0.1);
+	glRotatef(-20, 0, 0, 1);
+	glTranslatef(0.3, 0.25, -0.1);
+	draw3dObject(-0.3, -0.3, 0.1, -0.28, 0.05, 0.09, 0.0, 0.0, 0.0);
+	glPopMatrix();
+	
+	glPushMatrix();
+	glTranslatef(0.3, -0.25, 0.1);
+	glRotatef(20, 0, 0, 1);
+	glTranslatef(-0.3, 0.25, -0.1);
+	draw3dObject(0.3, -0.3, 0.1, 0.28, 0.05, 0.09, 0.0, 0.0, 0.0);
+	glPopMatrix();
 	// drawCube that connects the frame to the handlebars 
-	drawCube(0.5, -0.3, 0.1, 0.5, 0.2, 0.1, 0.01);
+	draw3dObject(0.5, -0.3, 0.1, 0.48, 0.2, 0.09, 0.0, 0.0, 0.0);
 
 	// Seat support
-	drawCube(0.0, 0.0, 0.1, 0.0, 0.2, 0.1, 0.01);
+	draw3dObject(0.0, 0.0, 0.1, 0.02, 0.2, 0.09, 0.0, 0.0, 0.0);
 
 }
 
 
 void drawSeat() {
-	glColor3f(0.5f, 0.35f, 0.05f); // Brown color for seat
-	
+	glColor3f(0.5, 0.35, 0.05); // Brown color
 	// seat
-	drawCube(-0.1, 0.2, 0.12, 0.1, 0.25, 0.12, 0.03);
+	draw3dObject(-0.1, 0.2, 0.15, 0.1, 0.25, 0.0, 0.5, 0.35, 0.05);
 
 }
 
 void drawHandlebars() {
-	glColor3f(0.5f, 0.35f, 0.05f); // Brown color for handlebars
+	glColor3f(0.5f, 0.35f, 0.05f); // Brown color
 	glPushMatrix();
 	glTranslatef(0.5, 0.2, 0.25);
 	glRotatef(180, 0, 1, 0);
@@ -413,7 +350,7 @@ void drawHandlebars() {
 
 void drawBicycle() {
 	glPushMatrix();
-	glRotatef(angle, 0.0f, 1.0f, 0.0f);
+	glRotatef(angle, 0, 1, 0);
 	glTranslatef(0.5, 0.7, bicycleRedus);
 	glPushMatrix();
 	glTranslated(0.5, -0.3, 0.1);
@@ -431,15 +368,15 @@ void drawBicycle() {
 
 
 void idle() {
-	angle += 0.9f; // Increment the angle to rotate the cube
+	angle += 0.9f; // Increment the angle to rotate
 	if (angle > 360.0f) angle -= 360.0f; // Keep the angle within 0-360 range
 
 }
 
-// draw a plane with a size of 100x100 under the building
+// draw plane with a size of 100x100 under the building
 void drawPlane() {
 	glBegin(GL_QUADS);
-	glColor3f(0.5f, 0.5f, 0.5f); // Grey color for the plane
+	glColor3f(0.5f, 0.5f, 0.5f); // Grey color
 	glVertex3f(-50.0, 0.0, 50.0);
 	glVertex3f(50.0, 0.0, 50.0);
 	glVertex3f(50.0, 0.0, -50.0);
@@ -479,7 +416,7 @@ LRESULT WINAPI WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
 	static GLfloat cameraX = 5.0f, cameraY = 8.0f, cameraZ = 30.0f;
 	static GLfloat pitch = 0.0f, yaw = 0.0f; // Pitch and yaw angles
 	static GLfloat cameraSpeed = 1.0f;
-	static GLfloat rotationSpeed = 1.0f; // Adjust rotation speed as needed
+	static GLfloat rotationSpeed = 1.0f;
 
 	int  iPixelFormat;
 	
@@ -491,7 +428,7 @@ LRESULT WINAPI WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
 		SetPixelFormat(hdc, iPixelFormat, &pfd);
 		hgl = wglCreateContext(hdc);
 		wglMakeCurrent(hdc, hgl);
-		glClearColor(0, 0.5f, 0, 1.0f);  // Background color
+		glClearColor(0.0f, 0.5f, 0, 1.0f);  // green Background color
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glLoadIdentity();
 
@@ -508,7 +445,7 @@ LRESULT WINAPI WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
 		glViewport(0, 0, w, h);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_DEPTH_TEST);
-		// Call the function to draw the scene
+		// draw the scene
 		DrawScene();
 		glFlush();
 		SwapBuffers(hdc);
@@ -519,7 +456,7 @@ LRESULT WINAPI WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
 		glViewport(0, 0, w, h);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_DEPTH_TEST);
-		// Call the function to draw the scene
+		// draw the scene
 		DrawScene();
 		glFlush();
 		SwapBuffers(hdc);
@@ -742,7 +679,6 @@ LRESULT WINAPI WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
 				DrawScene();
 				glFlush();
 				SwapBuffers(hdc);
-
 			}
 			default:
 				break;
