@@ -1,6 +1,6 @@
 # Computer Graphics project
 
-### this project contain's a 3d building and a bicycle
+### this project contains a 3d building and a bicycle
 
 ## Controls
 
@@ -18,7 +18,7 @@
 
 - 'l' to rotate the front wheel left
 - 'r' to rotate the front wheel right
-- 't' to return the wheel to the fornt
+- 't' to return the wheel to the front
 - 'f' to move the bicycle froward in the x direction
 - 'b' to move the bicycle backward in the x direction
 - left mouse button to start rotating the bicycle around the building
