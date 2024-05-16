@@ -1,6 +1,6 @@
 # Computer Graphics project
 
-### this project contain's a 3d building and a bicycle
+### this project contains a 3d building and a bicycle
 
 ## Controls
 
