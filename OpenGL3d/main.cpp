@@ -413,7 +413,7 @@ void drawHandlebars() {
 
 void drawBicycle() {
 	glPushMatrix();
-	glRotatef(-angle, 0.0f, 1.0f, 0.0f);
+	glRotatef(angle, 0.0f, 1.0f, 0.0f);
 	glTranslatef(0.5, 0.7, bicycleRedus);
 	glPushMatrix();
 	glTranslated(0.5, -0.3, 0.1);
@@ -431,7 +431,7 @@ void drawBicycle() {
 
 
 void idle() {
-	angle -= 0.9f; // Increment the angle to rotate the cube
+	angle += 0.9f; // Increment the angle to rotate the cube
 	if (angle > 360.0f) angle -= 360.0f; // Keep the angle within 0-360 range
 
 }
@@ -529,7 +529,14 @@ LRESULT WINAPI WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
 		{
 			case 'O':
 			{
-				if (GetKeyState(VK_SHIFT) & 0x8000)
+				// get the state of the shift and caps lock keys
+				bool shiftPressed = GetKeyState(VK_SHIFT) & 0x8000;
+				bool capsLockOn = GetKeyState(VK_CAPITAL) & 0x0001;
+
+				// Perform XOR operation to determine which condition to open
+				bool openCondition = shiftPressed ^ capsLockOn;
+
+				if (openCondition)
 				{
 					if (!isWindowOpen)
 					{
@@ -548,7 +555,14 @@ LRESULT WINAPI WndProc(HWND hwnd, UINT m, WPARAM wp, LPARAM lp)
 			}
 			case 'C':
 			{
-				if (GetKeyState(VK_SHIFT) & 0x8000)
+				// get the state of the shift and caps lock keys
+				bool shiftPressed = GetKeyState(VK_SHIFT) & 0x8000;
+				bool capsLockOn = GetKeyState(VK_CAPITAL) & 0x0001;
+
+				// Perform XOR operation to determine which condition to close
+				bool closeCondition = shiftPressed ^ capsLockOn;
+
+				if (closeCondition)
 				{
 					if (isWindowOpen)
 					{
@@ -761,7 +775,7 @@ int APIENTRY WinMain(HINSTANCE hi, HINSTANCE pi, LPSTR c, int ns)
 	wc.lpszMenuName = NULL;
 	wc.style = CS_HREDRAW | CS_VREDRAW;
 	RegisterClass(&wc);
-	HWND hwnd = CreateWindow(L"MyClass", L"Hello World", WS_OVERLAPPEDWINDOW, 300, 150, 800, 600, NULL, NULL, hi, 0);
+	HWND hwnd = CreateWindow(L"MyClass", L"3d building & bicycle", WS_OVERLAPPEDWINDOW, 300, 150, 800, 600, NULL, NULL, hi, 0);
 	ShowWindow(hwnd, ns);
 	UpdateWindow(hwnd);
 	MSG msg;
