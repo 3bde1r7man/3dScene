@@ -7,44 +7,6 @@
 #pragma comment(lib,"opengl32.lib")
 #pragma comment(lib,"glu32.lib")
 
-/*
-	20210014 : Ahmed Hanfy
-	20210210 : Abdelrhman Mostafa
-	20210484 : Youssef Mohamed
-
-
-*************** Door Controls ***************
-
-	- lower case 'o' to open the door
-	- lower case 'c' to close the door
-
-*************** Window Controls ***************
-
-	- upper case 'O' to open the windows
-	- upper case 'C' to close the windows
-
-*************** Bicycle Controls ***************
-
-	- 'l' to rotate the front wheel left
-	- 'r' to rotate the front wheel right
-	- 't' to return the wheel to the front
-	- 'f' to move the bicycle froward in the x direction
-	- 'b' to move the bicycle backward in the x direction
-	- left mouse button to start rotating the bicycle around the building
-	- right mouse button to stop rotating the bicycle around the building
-
-*************** Camera Controls ***************
-
-	- 'w' to move forward
-	- 's' to move backward
-	- 'd' to rotate right
-	- 'a' to rotate left
-	- 'e' to rotate down
-	- 'q' to rotate up
-	- spacebar to move up
-	- ctrl to move down
-*/
-
 
 const int WINDOW_WIDTH = 800;
 const int WINDOW_HEIGHT = 600;
